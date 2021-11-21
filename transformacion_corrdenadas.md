@@ -58,8 +58,11 @@ FE(K) <- function(factor_18, coodenada_este){
 }
 ```
 Para hallar el factor 18, puesto que Perú está en esa zona, debemos promediar las coordenadas NA Y YgP, el cual sale 8546516.472, debemos ver en la tabla que se presenta, a que valor se aproxima, el cual sería a los 8500000.
+<div>
+<p style = 'text-align:center;'>
 <img src="./Imagen2.png" alt="JuveYell" width="400px">
-
+</p>
+</div>
 Obtenemos el resultado del factor de escala en los dos puntos
 ``` R
 > FE(0.012374,654215.327)
@@ -102,6 +105,7 @@ Ahora lo hallamos con la segunda fórmula(FExFe), solo nos faltaría hallar el f
 
 Para el factor de elevacion, necesitamos la altura elipsoidal, para ello necesitamos  aplicar una fórmula, la cual se presenta a continuación.
 ![imagen info](./descarga.jfif)
+
 Para hallar la altura del geoide, lo hallamos mediante cualquier de los enlaces  [UNAVCO.com](https://www.unavco.org/software/geodetic-utilities/geoid-height-calculator/geoid-height-calculator.html), [geographiclib](https://geographiclib.sourceforge.io/cgi-bin/GeoidEval?input=-13.1366055556%2C-73.57724167%2C2345.21+-13.11148611%2C-73.55690556%2C2569.65&option=Submit),[real.flightairmap](https://real.flightairmap.com/tools/geoid), donde insertamos la latitud, longitud y elevacion de cada coordenada en grados decimales.
 
 |      | Punto A | Punto P      |
