@@ -1,10 +1,10 @@
-# TRANSFORMACIÓN DE COORDENADAS TOPOGRÁFICAS GEOREFERENCIADAS A UTM
+# TRANSFORMACIÓN DE COORDENADAS TOPOGRÁFICAS GEORREFERENCIADAS A UTM
 ![imagen](https://topografia2.com/wp-content/uploads/2019/04/Coordenadas-UTM.jpg)
 
 Las coordenadas topográficas se puede decir que son distancias **puras** ya que son medidas en el terreno de estudio, pero las coordenadas UTM tienen una sola posición en el mundo, por lo cual es necesario transformar las coordenadas topográficas a UTM.
 Para hacer este procedimiento primero tenemos que hallar el factor combinado para modificar las distancias, después se calculan las coordenadas UTM del punto deseado.
 
-## FACTOR COMBINADO
+## FACTOR COMBINADO(Modificación de distancia)
 Para hallar este factor , tenemos que encontrar primero el **Factor de escala** y **Reducción a nivel medio del mar o Factor de elevación**.
 
 ### **Factor combinado(FC)= FE.RNMM= FE.Fe**
@@ -12,7 +12,7 @@ Para hallar este factor , tenemos que encontrar primero el **Factor de escala** 
 * RNMM=Reducción a nivel medio del mar.
 * Factor de elevación.
 
-Para comprender mejor este proceso haremos un ejemplo, para lo cual necesitamos las coordenadas de un punto(A) conocido en UTM y de un punto(B) que sean topográficas georeferenciadas.
+Para comprender mejor este proceso haremos un ejemplo, para lo cual necesitamos las coordenadas de un punto(A) conocido en UTM y de un punto(P) que sean topográficas georeferenciadas.
 
 **PUNTO A**
 * NA: 8547322.258
@@ -136,11 +136,67 @@ factor_elev(13.1366056,13.11148611,2504.135)
 ```
 Hallando el factor combinado por el segundo método promediamos los factores de escala y multiplicamos por el factor de elevación, obteniendo una distancia de  3545.499561m, obteniendo una diferencia de 1.754439m.
 
-Calculando de nuevo las coordenadas UTM de P a partir de la distancia modificada, obtenemos:
+## MODIFICACIÓN DE DIRECCIÓN
 
-* NP:8545711.48290091
-* EP:657373.802382074
+Luego de modificar la distancia, debemos de también modificar la dirección.Para ellos vamos a calcular la corrección por curvatura:
+## t-T
 
+* t= Azimut topográfico
+* T=Azimut geodésico proyectado
+
+Cada componente de la expresión tiene una fórmula que la pondremos a continuación:
+
+t-T=Δy( 2X₁´ + X´₂)*6.8755*(0.00000001)(XVIII)segundos         
+t-T=Δy( 2X₁´ + X´₂)*0.085*(0.00000001)segundos
+
+* X´= X-500 000
+
+Ahora algunos ejemplos de acuerdo al meridiano central 
+
+
+ <img src="./correccion curvatura.PNG" alt="JuveYell" width="350px">
+
+ En nuestro ejemplo, ya tenemos la distancia corregida, entonces procedemos a corregir el azimut para después calcular las coordenadas UTM del punto P.
+
+ ```R
+ variacion_y<- 1611.5725
+x1apos<- 654215.327-500000
+x2apos<- 657375.365-500000
+
+correccion_curvatura<-variacion_y*(2*x1apos+x2apos)*0.085*0.00000001
+```
+Obtenemos
+```R
+> correccion_curvatura
+[1] 0.6380781
+```
+Entonces, puesto que el resultado es positivo tenemos que sumar al azimut dado inicialmente.
+El azimut inicial fue de 117.02094 grados, lo que es igual a  117°1'15.38", sumando la corrección
+que es de signo positiva obtenemos 117°1'16.02"
+
+Teniendo ya la corrección en distancia y azimut, calcularemos las coordenadas UTM del punto P.
+```R
+coor_punto_a_calcular<- function(coord_x_conomcido, coord_y_conocido,azimut,dh){
+  
+  x<- coord_x_conomcido + (sin(azimut*(pi/180))*dh)
+  y<- coord_y_conocido + cos(azimut*(pi/180))*dh
+  print(paste("x,y" ,data.frame(x,y)))
+  
+} 
+
+coor_punto_a_calcular(654215.327,8547322.258,117.0211167,3545.499561)
+```
+Obtenemos:
+```R
+> coor_punto_a_calcular(654215.327,8547322.258,117.0211167,3545.499561)
+[1] "x,y 657373.796789654" "x,y 8545711.47070029"
+```
+* NP=8545711.47070029
+* EP=657373.796789654
+
+A diferencia de  las coordenadas topográficas georeferreferenciadas, el norte aumentó y el este disminuyó.
+* YgP= 8545710.68557724
+* XgP=657375.365807785
 
 
 
